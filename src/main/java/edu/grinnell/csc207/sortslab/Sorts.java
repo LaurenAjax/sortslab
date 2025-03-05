@@ -1,5 +1,7 @@
 package edu.grinnell.csc207.sortslab;
 
+import java.util.Arrays;
+
 /**
  * A collection of sorting algorithms over generic arrays.
  */
@@ -74,22 +76,55 @@ public class Sorts {
         }
     }
     
-    public static <T extends Comparable<? super T>> T[] merge(T[] arr1, T[] arr2) {
-        T[] sorted = (T[]) new Object[arr1.length + arr2.length];
-        int ind1 = 0;
-        int ind2 = 0;
-        int sortedInd = 0;
-        while (sortedInd < sorted.length) {
-            if (ind1 < arr1.length && ind2 < arr2.length) {
-                sorted[sortedInd] = (arr1[ind1].compareTo(arr2[ind2])) > 0 ? arr1[ind1++] : arr2[ind2++];
-            } else if (ind1 < arr1.length) {
-                sorted[sortedInd] = arr1[ind1++];
+    /**
+     * Merges two sorted sides of an array into one sorted whole.
+     * @param <T> the carrier type of the array
+     * @param arr the array to sort
+     * @param left the left index to start at
+     * @param mid the middle index of the array, divider between two sorted sides
+     * @param right the right index to end at
+     */
+    public static <T extends Comparable<? super T>> void merge(T[] arr, int left, int mid, int right) {
+        T[] leftArr = Arrays.copyOfRange(arr, left, mid);
+        T[] rightArr = Arrays.copyOfRange(arr, mid + 1, right);
+        
+        int leftInd = 0;
+        int rightInd = 0;
+        int sortedInd = left;
+        
+        while (leftInd < leftArr.length && rightInd < rightArr.length) {
+            if (leftArr[leftInd].compareTo(rightArr[rightInd]) <= 0) {
+                arr[sortedInd++] = leftArr[leftInd++];
             } else {
-                sorted[sortedInd] = arr2[ind2++];
+                arr[sortedInd++] = rightArr[rightInd++];
             }
-            sortedInd++;
         }
-        return sorted;
+        
+        while (leftInd < leftArr.length) {
+            arr[sortedInd++] = leftArr[leftInd++];
+        }
+        
+        while (rightInd < rightArr.length) {
+            arr[sortedInd++] = rightArr[rightInd++];
+        }
+    }
+    
+    /**
+     * Sorts each half of the array and then merges them (main execution of merge sort)
+     * @param <T> the carrier type of the array
+     * @param arr the array to sort
+     * @param left the left index to start at
+     * @param right the right index to end at
+     */
+    public static <T extends Comparable<? super T>> void sort(T arr[], int left, int right) {
+        if (left < right) {
+            int mid = left + (right - left) / 2;
+            
+            sort(arr, left, mid);
+            sort(arr, mid + 1, right);
+            
+            merge(arr, left, mid, right);
+        }
     }
 
     /**
@@ -101,10 +136,12 @@ public class Sorts {
      * @param arr the array to sort
      */
     public static <T extends Comparable<? super T>> void mergeSort(T[] arr) {
-        T[] arr1 = (T[]) new Object[arr.length / 2];
+        sort(arr, 0, arr.length);
+        
+        /*T[] arr1 = (T[]) new Object[arr.length / 2];
         T[] arr2 = (T[]) new Object[arr.length - (arr.length / 2)];
         System.arraycopy(arr, 0, arr1, 0, arr1.length);
-        System.arraycopy(arr, arr1.length, arr2, 0, arr2.length);
+        System.arraycopy(arr, arr1.length, arr2, 0, arr2.length);*/
     }
 
     /**
@@ -126,7 +163,7 @@ public class Sorts {
      * @param arr the array to search, assumed to be sorted
      * @param lo the lower bound of indices to search (inclusive)
      * @param hi the upper bound of indices to search (exclusive)
-     * @return the index if <code>value</code> int <code>arr</code> or 
+     * @return the index if <code>value</code> T <code>arr</code> or 
      * <code>-1</code> if <code>value</code> is not in <code>arr</code>
      */
     public static <T extends Comparable<? super T>> int binarySearch(T value, T[] arr, int lo, int hi) {

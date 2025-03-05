@@ -80,19 +80,18 @@ public class Sorts {
      * Merges two sorted sides of an array into one sorted whole.
      * @param <T> the carrier type of the array
      * @param arr the array to sort
+     * @param leftArr the left array to be merged
+     * @param rightArr the right array to be merged
      * @param left the left index to start at
-     * @param mid the middle index of the array, divider between two sorted sides
      * @param right the right index to end at
      */
-    public static <T extends Comparable<? super T>> void merge(T[] arr, int left, int mid, int right) {
-        T[] leftArr = Arrays.copyOfRange(arr, left, mid);
-        T[] rightArr = Arrays.copyOfRange(arr, mid + 1, right);
+    public static <T extends Comparable<? super T>> void merge(T[] arr, T[] leftArr, T[] rightArr, int left, int right) {
         
         int leftInd = 0;
         int rightInd = 0;
-        int sortedInd = left;
+        int sortedInd = 0;
         
-        while (leftInd < leftArr.length && rightInd < rightArr.length) {
+        while (leftInd < left && rightInd < right) {
             if (leftArr[leftInd].compareTo(rightArr[rightInd]) <= 0) {
                 arr[sortedInd++] = leftArr[leftInd++];
             } else {
@@ -113,18 +112,27 @@ public class Sorts {
      * Sorts each half of the array and then merges them (main execution of merge sort)
      * @param <T> the carrier type of the array
      * @param arr the array to sort
-     * @param left the left index to start at
-     * @param right the right index to end at
+     * @param length the length of the given array
      */
-    public static <T extends Comparable<? super T>> void sort(T arr[], int left, int right) {
-        if (left < right) {
-            int mid = left + (right - left) / 2;
-            
-            sort(arr, left, mid);
-            sort(arr, mid + 1, right);
-            
-            merge(arr, left, mid, right);
+    public static <T extends Comparable<? super T>> void sort(T arr[], int length) {
+        if (length < 2) {
+            return;
         }
+        int mid = length / 2;
+        T[] leftArr = (T[]) new Comparable[mid];
+        T[] rightArr = (T[]) new Comparable[length - mid];
+        
+        for (int i = 0; i < mid; i++) {
+            leftArr[i] = arr[i];
+        }
+        for (int j = mid; j < length; j++) {
+            rightArr[j - mid] = arr[j];
+        }
+        
+        sort(leftArr, mid);
+        sort(rightArr, length - mid);
+
+        merge(arr, leftArr, rightArr, mid, length - mid);
     }
 
     /**
@@ -136,12 +144,7 @@ public class Sorts {
      * @param arr the array to sort
      */
     public static <T extends Comparable<? super T>> void mergeSort(T[] arr) {
-        sort(arr, 0, arr.length);
-        
-        /*T[] arr1 = (T[]) new Object[arr.length / 2];
-        T[] arr2 = (T[]) new Object[arr.length - (arr.length / 2)];
-        System.arraycopy(arr, 0, arr1, 0, arr1.length);
-        System.arraycopy(arr, arr1.length, arr2, 0, arr2.length);*/
+        sort(arr, arr.length);   
     }
 
     /**

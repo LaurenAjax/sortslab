@@ -147,6 +147,33 @@ public class Sorts {
         sort(arr, arr.length);   
     }
 
+    public static <T extends Comparable<? super T>> void quickSortHelper(T[] arr, int low, int hi) {
+        int partition = hi;
+        int lowerPtr= low;
+        int higherPtr = hi - 1;
+        while (lowerPtr < higherPtr) {
+            if (arr[lowerPtr].compareTo(arr[partition]) > 0 && arr[higherPtr].compareTo(arr[partition]) < 0) {
+                swap(arr, lowerPtr, higherPtr);
+                lowerPtr++;
+                higherPtr--;
+            } else if (arr[lowerPtr].compareTo(arr[partition]) > 0) {
+                higherPtr--;
+            } else if (arr[higherPtr].compareTo(arr[partition]) < 0) {
+                lowerPtr++;
+            } else {
+                lowerPtr++;
+                higherPtr--;
+            }
+        }
+        
+        int newPartition = lowerPtr + (higherPtr - lowerPtr) / 2;
+        swap(arr, partition, newPartition);
+        
+        quickSortHelper(arr, low, newPartition - 1);
+        quickSortHelper(arr, newPartition + 1, hi);
+    }
+    
+    
     /**
      * Sorts the array according to the quick sort algorithm:
      * <pre>
@@ -156,7 +183,7 @@ public class Sorts {
      * @param arr
      */
     public static <T extends Comparable<? super T>> void quickSort(T[] arr) {
-        // TODO: fill me in!
+        quickSortHelper(arr, 0, arr.length - 1);
     }
     
     /**

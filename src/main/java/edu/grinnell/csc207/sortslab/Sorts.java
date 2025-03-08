@@ -147,30 +147,31 @@ public class Sorts {
         sort(arr, arr.length);   
     }
 
-    public static <T extends Comparable<? super T>> void quickSortHelper(T[] arr, int low, int hi) {
-        int partition = hi;
-        int lowerPtr= low;
-        int higherPtr = hi - 1;
+    public static <T extends Comparable<? super T>> void quickSort(T[] arr, int low, int hi) {
+        if (low >= hi) {
+            return;
+        }
+        int pivot = hi;
+        int lowerPtr = low;
+        int higherPtr = hi;
+        
         while (lowerPtr < higherPtr) {
-            if (arr[lowerPtr].compareTo(arr[partition]) > 0 && arr[higherPtr].compareTo(arr[partition]) < 0) {
+            while (arr[lowerPtr].compareTo(arr[pivot]) <= 0 && lowerPtr < hi) {
+                lowerPtr++;
+            }
+            while (arr[higherPtr].compareTo(arr[pivot]) > 0 && higherPtr > low) {
+                higherPtr--;
+            }
+            if (lowerPtr < higherPtr) {
                 swap(arr, lowerPtr, higherPtr);
-                lowerPtr++;
-                higherPtr--;
-            } else if (arr[lowerPtr].compareTo(arr[partition]) > 0) {
-                higherPtr--;
-            } else if (arr[higherPtr].compareTo(arr[partition]) < 0) {
-                lowerPtr++;
-            } else {
-                lowerPtr++;
-                higherPtr--;
             }
         }
         
-        int newPartition = lowerPtr + (higherPtr - lowerPtr) / 2;
-        swap(arr, partition, newPartition);
+        swap(arr, pivot, lowerPtr);
+        pivot = lowerPtr;
         
-        quickSortHelper(arr, low, newPartition - 1);
-        quickSortHelper(arr, newPartition + 1, hi);
+        quickSort(arr, low, pivot - 1);
+        quickSort(arr, pivot + 1, hi);
     }
     
     
@@ -183,7 +184,7 @@ public class Sorts {
      * @param arr
      */
     public static <T extends Comparable<? super T>> void quickSort(T[] arr) {
-        quickSortHelper(arr, 0, arr.length - 1);
+        quickSort(arr, 0, arr.length - 1);
     }
     
     /**
